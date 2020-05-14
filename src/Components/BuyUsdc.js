@@ -8,6 +8,7 @@ class BuyUsdc extends React.Component {
     // This binding is necessary to make `this` work in the callback
     this.clickFunction = this.clickFunction.bind(this);
   }
+  
 
   clickFunction() {
     this.setState(state => ({

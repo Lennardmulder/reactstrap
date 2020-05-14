@@ -1,18 +1,10 @@
 import React from 'react';
 import Web3 from 'web3';
+import { MetaMaskButton } from 'rimble-ui';
+
 
 //Set web3 provider
 var web3 = new Web3(Web3.givenProvider || "ws://localhost:8546");
-
-//Fetch user's metamask address and slice it
-var shortAddress = ((web3.currentProvider.selectedAddress).slice(0, 8)+"..");
-
-//Fetch user's metamask balance
-web3.eth.getBalance(web3.currentProvider.selectedAddress).then(result => {
-  var mmBalance = result
-})
-
-
 
 class Account extends React.Component {
   constructor(props) {
@@ -21,16 +13,51 @@ class Account extends React.Component {
 
     // This binding is necessary to make `this` work in the callback
     this.clickFunction = this.clickFunction.bind(this);
+  } 
+
+
+  async getWalletInfo() { 
+
+    
+    //get Metamask address
+    let address = ((await web3.currentProvider.selectedAddress).slice(0, 8)+"..")
+    
+    //get Metamask balance
+    let balance = (web3.utils.fromWei(await web3.eth.getBalance(web3.currentProvider.selectedAddress).catch())).slice(0, 7);
+    
+    //get Metamask network
+    var network = null
+
+    switch (window.ethereum.networkVersion) {
+      case "1": 
+        network = "Ethereum Mainnet";
+        break;
+      case "2":
+        network = "Morden Test";
+        break;
+      case "3":
+        network = "Ropsten Test";
+        break;  
+      case "4":
+        network = "Rinkeby Test";
+        break;
+      case "5":
+        network = "Goerli Test";
+        break;
+      default:
+        network = "Unknown";
+    }
+    
+    //set Component state
+    this.setState(state => ({
+      address : address,
+      balance : balance,
+      network : network
+    }))
   }
 
   componentDidMount() {
-
-    this.setState(state => ({
-      address : shortAddress,
-      //balance : mmBalance,
-      network : null
-    }))
-
+    this.getWalletInfo()
   }
 
   clickFunction() {
@@ -52,9 +79,7 @@ class Account extends React.Component {
             <li>Your balance: Ξ{this.state.balance}</li>
             <li>Your network: {this.state.network}</li>
           </ul>
-          <button className="btn btn-primary" onClick={this.clickFunction}>
-            {this.state.isConnected ? 'Disconnect Metamask' : 'Connect Metamask'}
-          </button>
+          <MetaMaskButton.Outline>Connect with MetaMask</MetaMaskButton.Outline>
         </div>
       </div>
     );

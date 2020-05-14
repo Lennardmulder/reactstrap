@@ -12,10 +12,11 @@ function App() {
   return (
     <div className="row container-fluid">
       <Account />
-      <RSI />
+      <RSI /> 
       <BuyUsdc />
     </div>
   );
-} 
+}  
 
 export default App; 
+  
